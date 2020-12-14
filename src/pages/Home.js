@@ -1,17 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import MainPageLayout from '../components/MainPageLayout';
-import { apiGet } from '../misc/config';
-import ShowGrid from '../components/show/ShowGrid';
-import ActorGrid from '../components/actor/ActorGrid';
-import { useLastQuery } from '../misc/custom-hooks';
+import React, { useState, useCallback } from "react";
+import MainPageLayout from "../components/MainPageLayout";
+import { apiGet } from "../misc/config";
+import ShowGrid from "../components/show/ShowGrid";
+import ActorGrid from "../components/actor/ActorGrid";
+import { useLastQuery } from "../misc/custom-hooks";
 import {
   SearchInput,
   RadioInputsWrapper,
   SearchButtonWrapper,
-} from './Home.styled';
-import CustomRadio from '../components/CustomRadio';
+} from "./Home.styled";
+import CustomRadio from "../components/CustomRadio";
 
-const renderResults = results => {
+const renderResults = (results) => {
   if (results && results.length === 0) {
     return <div>No results</div>;
   }
@@ -30,29 +30,38 @@ const renderResults = results => {
 const Home = () => {
   const [input, setInput] = useLastQuery();
   const [results, setResults] = useState(null);
-  const [searchOption, setSearchOption] = useState('shows');
+  const [searchOption, setSearchOption] = useState("shows");
+  const [mode, setMode] = useState("online");
 
-  const isShowsSearch = searchOption === 'shows';
+  const isShowsSearch = searchOption === "shows";
   const onSearch = () => {
-    apiGet(`/search/${searchOption}?q=${input}`).then(result => {
-      setResults(result);
-    });
+    apiGet(`/search/${searchOption}?q=${input}`)
+      .then((result) => {
+        // console.log(result);
+        setResults(result);
+        localStorage.setItem("shows", JSON.stringify(result));
+      })
+      .catch((err) => {
+        let result = localStorage.getItem("shows");
+        setResults(JSON.parse(result));
+        setMode("offline");
+      });
   };
 
   const onInputChange = useCallback(
-    ev => {
+    (ev) => {
       setInput(ev.target.value);
     },
     [setInput]
   );
 
-  const onKeyDown = ev => {
+  const onKeyDown = (ev) => {
     if (ev.keyCode === 13) {
       onSearch();
     }
   };
 
-  const onRadioChange = useCallback(ev => {
+  const onRadioChange = useCallback((ev) => {
     setSearchOption(ev.target.value);
   }, []);
 
@@ -92,6 +101,13 @@ const Home = () => {
           Search
         </button>
       </SearchButtonWrapper>
+      <div>
+        {mode === "offline" ? (
+          <div class="alert alert-warning" role="alert">
+            you are offline now!
+          </div>
+        ) : null}
+      </div>
       {renderResults(results)}
     </MainPageLayout>
   );
