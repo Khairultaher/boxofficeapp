@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
-import { swdev } from "./swdev";
+// import { swdev } from "./swdev";
 
 ReactDOM.render(
   <BrowserRouter>
@@ -13,4 +13,4 @@ ReactDOM.render(
   document.getElementById("root")
 );
 
-swdev();
+// swdev();
